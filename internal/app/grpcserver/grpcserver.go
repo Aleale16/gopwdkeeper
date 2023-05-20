@@ -6,6 +6,7 @@ import (
 	"pwdkeeper/internal/app/crypter"
 	pb "pwdkeeper/internal/app/proto"
 	"pwdkeeper/internal/app/storage"
+	"sync"
 )
 
 var Authctx context.Context
@@ -83,9 +84,10 @@ func (s *ActionsServer) StoreSingleRecord(ctx context.Context, in *pb.StoreSingl
 
 func (s *ActionsServer) UpdateRecord(ctx context.Context, in *pb.UpdateRecordRequest) (*pb.UpdateRecordResponse, error) {
 	var response pb.UpdateRecordResponse
-
+	var m sync.Mutex
+	m.Lock()
 		response.Status= storage.UpdateRecord(in.RecordID, in.EncryptedData, crypter.IsAuhtorized(in.Login))
-
+	m.Unlock()
 	return &response, nil
 }
 

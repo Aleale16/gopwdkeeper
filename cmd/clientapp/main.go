@@ -115,6 +115,12 @@ func StartUI(c pb.ActionsClient) {
 //!Read Password and Show All encrypted user Records
 			case 2: 
 				password = consoleInput
+				if len(password) < 8 {
+					fmt.Print("Password is too short! Min length = 8 symbols")
+					fmt.Print("Enter Password: ")
+					menulevel = 2
+					break
+				}
 				if userisNew {	
 					//Key Encryption Key (KEK)
 					key2 := crypter.Key2build(password)	
