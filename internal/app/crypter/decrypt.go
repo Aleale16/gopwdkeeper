@@ -47,7 +47,7 @@ func GetAuthenticatedUser(msg string) (user User, err error) {
 	return user, err
 }
 
-
+//CheckUserAuth - decrypt auth message
 func CheckUserAuth(msg string) (validSign bool, val string) {
 	var (
 		data []byte // декодированное сообщение с подписью
