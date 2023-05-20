@@ -14,6 +14,7 @@ type User struct{
 	login string
 }
 
+//IsAuhtorized - checks if login is Valid Signed
 func IsAuhtorized(msg string) (login string) {
 		user, err := GetAuthenticatedUser(msg)
 		if err != nil {
@@ -25,10 +26,10 @@ func IsAuhtorized(msg string) (login string) {
 		}
 }
 
-
+//GetAuthenticatedUser - gets user login value from signed token
 func GetAuthenticatedUser(msg string) (user User, err error) {
 	var validSign bool	
-	log.Debug().Str("Authorization header",msg)
+	log.Debug().Str("Authorization msg",msg)
 	if msg != "" {
 		validSign, user.login = CheckUserAuth(msg)
 		if !validSign{
@@ -40,15 +41,13 @@ func GetAuthenticatedUser(msg string) (user User, err error) {
 		}
 	} else {
 		user.login = ""
-		log.Debug().Msgf("Empty Authorization header!")
-		err = errors.New("empty authorization header")
+		log.Debug().Msgf("Empty Authorization msg!")
+		err = errors.New("empty authorization msg")
 	}	
-    //validate the session token in the request,
-    //fetch the session state from the session store,
-    //and return the authenticated user
-    //or an error if the user is not authenticated	
 	return user, err
 }
+
+
 func CheckUserAuth(msg string) (validSign bool, val string) {
 	var (
 		data []byte // декодированное сообщение с подписью
