@@ -200,8 +200,20 @@ func StartUI(c pb.ActionsClient) {
 							somedataDecrypted := crypter.DecryptData([]byte(noncedata),key1)
 							log.Debug().Msgf("somedataDecrypted: %v", string(somedataDecrypted))
 
-							log.Info().Msgf("Decrypted:\n Name=%v\n Data=%q\n Type=%v\n",loadeddataname, string(somedataDecrypted), loadeddatatype) 
-
+							if loadeddatatype == "File" {
+								somedata := somedataDecrypted
+								fname := "loaded_" + loadeddataname
+								log.Info().Msgf("Decrypted:\n Name=%v\n Data=%q\n Type=%v\n",loadeddataname, fname, loadeddatatype) 
+								if f, err := os.Create(fname); err == nil {
+									log.Info().Msgf("%q looks like an ID number.\n Decrypting data...\n", recordIDname)
+									if _, err := f.Write(somedata); err == nil {
+										log.Info().Msgf("Decrypted and saved to file:\n FileName=%v\n Type=%v\n",loadeddataname, loadeddatatype)
+									} else {log.Error().Err(err)}
+								} else {log.Error().Err(err)}
+								
+							} else {
+								log.Info().Msgf("Decrypted:\n Name=%v\n Data=%q\n Type=%v\n",loadeddataname, string(somedataDecrypted), loadeddatatype) 
+							}
 							fmt.Printf("[u]pdate, [d]elete, [r]eturn? ")
 							//fmt.Printf("Enter somedata to update record ID %v: ", recordIDname)
 							menulevel = 41
@@ -254,10 +266,10 @@ func StartUI(c pb.ActionsClient) {
 //!Create new Record 3)Read new someDATA from FILE and Store NEW record returning created id
 			case 321:
 				fpath := consoleInput
-				somedata = fpath + " ::: " + filereader(fpath)
+				somedata = filereader(fpath)
 				somedataenc := crypter.EncryptData(somedata, key1)
 				log.Debug().Msgf("Created somedataenc= %v", hex.EncodeToString(somedataenc))
-				status, recordID := msgsender.SendUserStoreRecordmsg(c, recordIDname, hex.EncodeToString(somedataenc), datatype, AuthToken)
+				status, recordID := msgsender.SendUserStoreRecordmsg(c, fpath, hex.EncodeToString(somedataenc), datatype, AuthToken)
 				if status == "200" {
 					log.Info().Msg("Created new record with ID=")
 					log.Info().Msg(recordID)
@@ -320,4 +332,6 @@ func filereader(fpath string) (fcontent string){
 	}
 	return string(content)
 }
+
+
 
