@@ -221,15 +221,15 @@ func StartUI(c pb.ActionsClient) {
 					case "s":
 						datatype = "String"
 						fmt.Print("Enter somedata text to store: ")
-						menulevel = 32
+						menulevel = 320
 					case "f":
 						datatype = "File"
 						fmt.Print("Enter filepath to store: ")
-						menulevel = 32
+						menulevel = 321
 					case "b":
 						datatype = "Bankcard"
 						fmt.Print("Enter 20 digits, exp, cvc/cvv to store: ")
-						menulevel = 32
+						menulevel = 320
 					default:
 						log.Warn().Msgf("Wrong data type %v!", datatype)
 						fmt.Print("Enter data type to store [s]tring, [f]ile, [b]ankcard: ")
@@ -237,8 +237,24 @@ func StartUI(c pb.ActionsClient) {
 					}				
 				
 //!Create new Record 3)Read new someDATA and Store NEW record returning created id
-			case 32:
+			case 320:
 				somedata = consoleInput
+				somedataenc := crypter.EncryptData(somedata, key1)
+				log.Debug().Msgf("Created somedataenc= %v", hex.EncodeToString(somedataenc))
+				status, recordID := msgsender.SendUserStoreRecordmsg(c, recordIDname, hex.EncodeToString(somedataenc), datatype, AuthToken)
+				if status == "200" {
+					log.Info().Msg("Created new record with ID=")
+					log.Info().Msg(recordID)
+				} else {
+					log.Error().Msg("Error creating NEW data record!")
+				}
+				menulevel = gotoMenulevel3(c, login, AuthToken)
+				fmt.Print("Enter ID of existing record or NAME of new record to create: ")
+
+//!Create new Record 3)Read new someDATA from FILE and Store NEW record returning created id
+			case 321:
+				fpath := consoleInput
+				somedata = fpath + " ::: " + filereader(fpath)
 				somedataenc := crypter.EncryptData(somedata, key1)
 				log.Debug().Msgf("Created somedataenc= %v", hex.EncodeToString(somedataenc))
 				status, recordID := msgsender.SendUserStoreRecordmsg(c, recordIDname, hex.EncodeToString(somedataenc), datatype, AuthToken)
@@ -293,5 +309,15 @@ func gotoMenulevel3(c pb.ActionsClient, login, AuthToken string) (menulevel int3
 	log.Info().Msg(userRecordsJSON)
 	menulevel = 3
 	return menulevel
+}
+
+func filereader(fpath string) (fcontent string){
+	content, err := os.ReadFile(fpath)
+
+	if err != nil {
+		 log.Error().Err(err)
+		 return
+	}
+	return string(content)
 }
 
