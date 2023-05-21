@@ -266,18 +266,24 @@ func StartUI(c pb.ActionsClient) {
 //!Create new Record 3)Read new someDATA from FILE and Store NEW record returning created id
 			case 321:
 				fpath := consoleInput
-				somedata = filereader(fpath)
-				log.Debug().Msgf("File read content = %v", somedata)
-				somedataenc := crypter.EncryptData(somedata, key1)
-				log.Debug().Msgf("Created somedataenc= %v", hex.EncodeToString(somedataenc))
-				status, recordID := msgsender.SendUserStoreRecordmsg(c, fpath, hex.EncodeToString(somedataenc), datatype, AuthToken)
-				if status == "200" {
-					log.Info().Msgf("Created new record with ID=%v", recordID)
+				somedata, err := filereader(fpath)
+				if err == nil {
+					log.Debug().Msgf("File read content = %v", somedata)
+					somedataenc := crypter.EncryptData(somedata, key1)
+					log.Debug().Msgf("Created somedataenc= %v", hex.EncodeToString(somedataenc))
+					status, recordID := msgsender.SendUserStoreRecordmsg(c, fpath, hex.EncodeToString(somedataenc), datatype, AuthToken)
+					if status == "200" {
+						log.Info().Msgf("Created new record with ID=%v", recordID)
+					} else {
+						log.Error().Msg("Error creating NEW data record!")
+					}
+					menulevel = gotoMenulevel3(c, login, AuthToken)
+					fmt.Print("Enter ID of existing record or NAME of new record to create: ")
 				} else {
-					log.Error().Msg("Error creating NEW data record!")
+					log.Info().Msgf("Error reading file %v or file not exist", fpath)
+					fmt.Print("Enter filepath to store: ")
+					menulevel = 321
 				}
-				menulevel = gotoMenulevel3(c, login, AuthToken)
-				fmt.Print("Enter ID of existing record or NAME of new record to create: ")
 				
 //![u]pdate, [d]elete, [r]eturn? someDATA
 			case 41:
@@ -323,15 +329,19 @@ func gotoMenulevel3(c pb.ActionsClient, login, AuthToken string) (menulevel int3
 	return menulevel
 }
 
-func filereader(fpath string) (fcontent string){
+func filereader(fpath string) (fcontent string, err error){
+	if _, err = os.Stat(fpath); os.IsNotExist(err) {
+		// path does not exist
+		return "", err
+	}
 	content, err := os.ReadFile(fpath)
 
 	if err != nil {
 		 log.Error().Err(err)
-		 return err.Error()
+		 return "", err
 	}
 	log.Debug().Msgf("File content = %v", content)
-	return string(content)
+	return string(content), nil
 }
 
 
