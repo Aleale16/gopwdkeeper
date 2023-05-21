@@ -207,7 +207,7 @@ func StartUI(c pb.ActionsClient) {
 								if f, err := os.Create(fname); err == nil {
 									log.Info().Msgf("%q looks like an ID number.\n Decrypting data...\n", recordIDname)
 									if _, err := f.Write(somedata); err == nil {
-										log.Info().Msgf("Decrypted and saved to file:\n FileName=%v\n Type=%v\n",loadeddataname, loadeddatatype)
+										log.Info().Msgf("Decrypted and saved to file:\n FileName=%v\n Content=%q\n Type=%v\n",loadeddataname, string(somedata), loadeddatatype)
 									} else {log.Error().Err(err)}
 								} else {log.Error().Err(err)}
 								
@@ -267,12 +267,12 @@ func StartUI(c pb.ActionsClient) {
 			case 321:
 				fpath := consoleInput
 				somedata = filereader(fpath)
+				log.Debug().Msgf("File read content = %v", somedata)
 				somedataenc := crypter.EncryptData(somedata, key1)
 				log.Debug().Msgf("Created somedataenc= %v", hex.EncodeToString(somedataenc))
 				status, recordID := msgsender.SendUserStoreRecordmsg(c, fpath, hex.EncodeToString(somedataenc), datatype, AuthToken)
 				if status == "200" {
-					log.Info().Msg("Created new record with ID=")
-					log.Info().Msg(recordID)
+					log.Info().Msgf("Created new record with ID=%v", recordID)
 				} else {
 					log.Error().Msg("Error creating NEW data record!")
 				}
@@ -328,8 +328,9 @@ func filereader(fpath string) (fcontent string){
 
 	if err != nil {
 		 log.Error().Err(err)
-		 return
+		 return err.Error()
 	}
+	log.Debug().Msgf("File content = %v", content)
 	return string(content)
 }
 
