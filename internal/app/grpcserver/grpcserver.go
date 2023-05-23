@@ -52,7 +52,7 @@ func (s *ActionsServer) IsAuhtorized(ctx context.Context, in *pb.IsAuhtorizedReq
 func (s *ActionsServer) GetUser(ctx context.Context, in *pb.GetUserRequest) (*pb.GetUserResponse, error) {
 	var response pb.GetUserResponse
 
-	response.Status, response.Fek = storage.GetUser(in.Login)
+	response.Status, response.Fek = storage.GetUser(ctx, in.Login)
 	//response.Status, response.Fek = storage.GetUser(fmt.Sprintf(("%s"), Authctx.Value("auhtorizedLogin")))
 
 	return &response, nil
@@ -62,7 +62,7 @@ func (s *ActionsServer) GetUser(ctx context.Context, in *pb.GetUserRequest) (*pb
 func (s *ActionsServer) StoreUser(ctx context.Context, in *pb.StoreUserRequest) (*pb.StoreUserResponse, error) {
 	var response pb.StoreUserResponse
 
-	response.Status, response.Fek = storage.StoreUser(in.Login, in.Password, in.Fek)
+	response.Status, response.Fek = storage.StoreUser(ctx, in.Login, in.Password, in.Fek)
 
 	return &response, nil
 }
@@ -71,7 +71,7 @@ func (s *ActionsServer) StoreUser(ctx context.Context, in *pb.StoreUserRequest) 
 func (s *ActionsServer) GetUserAuth(ctx context.Context, in *pb.GetUserAuthRequest) (*pb.GetUserAuthResponse, error) {
 	var response pb.GetUserAuthResponse
 
-	response.Status, response.Fek = storage.AuthenticateUser(in.Login, in.Password)
+	response.Status, response.Fek = storage.AuthenticateUser(ctx, in.Login, in.Password)
 
 	return &response, nil
 }
@@ -81,7 +81,7 @@ func (s *ActionsServer) GetUserRecords(ctx context.Context, in *pb.GetUserRecord
 	var response pb.GetUserRecordsResponse
 	//log.Debug().Msgf("Authctx auhtorizedLogin= %v", Authctx.Value("auhtorizedLogin"))
 	//response.Status, response.UserRecordsJSON = storage.GetUserRecords(fmt.Sprintf(("%v"), Authctx.Value("auhtorizedLogin")))
-	response.Status, response.UserRecordsJSON = storage.GetUserRecords(crypter.IsAuhtorized(in.Login))
+	response.Status, response.UserRecordsJSON = storage.GetUserRecords(ctx, crypter.IsAuhtorized(in.Login))
 
 	return &response, nil
 }
@@ -90,7 +90,7 @@ func (s *ActionsServer) GetUserRecords(ctx context.Context, in *pb.GetUserRecord
 func (s *ActionsServer) StoreSingleRecord(ctx context.Context, in *pb.StoreSingleRecordRequest) (*pb.StoreSingleRecordResponse, error) {
 	var response pb.StoreSingleRecordResponse
 	if crypter.IsAuhtorized(in.Login) != "" {
-		response.Status, response.RecordID = storage.StoreRecord(in.DataName, in.SomeData, in.DataType, crypter.IsAuhtorized(in.Login))
+		response.Status, response.RecordID = storage.StoreRecord(ctx, in.DataName, in.SomeData, in.DataType, crypter.IsAuhtorized(in.Login))
 	}
 
 	return &response, nil
@@ -101,7 +101,7 @@ func (s *ActionsServer) UpdateRecord(ctx context.Context, in *pb.UpdateRecordReq
 	var response pb.UpdateRecordResponse
 	var m sync.Mutex
 	m.Lock()
-	response.Status = storage.UpdateRecord(in.RecordID, in.EncryptedData, crypter.IsAuhtorized(in.Login))
+	response.Status = storage.UpdateRecord(ctx, in.RecordID, in.EncryptedData, crypter.IsAuhtorized(in.Login))
 	m.Unlock()
 	return &response, nil
 }
@@ -110,7 +110,7 @@ func (s *ActionsServer) UpdateRecord(ctx context.Context, in *pb.UpdateRecordReq
 func (s *ActionsServer) DeleteRecord(ctx context.Context, in *pb.DeleteRecordRequest) (*pb.DeleteRecordResponse, error) {
 	var response pb.DeleteRecordResponse
 
-	response.Status = storage.DeleteRecord(in.RecordID, crypter.IsAuhtorized(in.Login))
+	response.Status = storage.DeleteRecord(ctx, in.RecordID, crypter.IsAuhtorized(in.Login))
 
 	return &response, nil
 }
@@ -120,7 +120,7 @@ func (s *ActionsServer) GetSingleRecord(ctx context.Context, in *pb.GetSingleRec
 	var response pb.GetSingleRecordResponse
 
 	//response.EncryptedData, response.DataType = storage.GetRecord(in.RecordID)
-	response.EncryptedData, response.DataType = storage.GetRecord(in.RecordID, crypter.IsAuhtorized(in.Login))
+	response.EncryptedData, response.DataType = storage.GetRecord(ctx, in.RecordID, crypter.IsAuhtorized(in.Login))
 
 	return &response, nil
 }
@@ -130,7 +130,7 @@ func (s *ActionsServer) GetSingleNameRecord(ctx context.Context, in *pb.GetSingl
 	var response pb.GetSingleNameRecordResponse
 
 	//response.EncryptedData, response.DataType = storage.GetRecord(in.RecordID)
-	response.DataName = storage.GetNameRecord(in.RecordID, crypter.IsAuhtorized(in.Login))
+	response.DataName = storage.GetNameRecord(ctx, in.RecordID, crypter.IsAuhtorized(in.Login))
 
 	return &response, nil
 }

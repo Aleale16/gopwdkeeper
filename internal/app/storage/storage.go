@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"encoding/hex"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -11,11 +12,13 @@ import (
 var PGdb *pgxpool.Pool
 
 type authUsers struct {
+	ctx context.Context
 	login    string
 	password string
 	fek      string
 }
 type dataRecords struct {
+	ctx context.Context
 	idrecord                         string
 	namerecord, datarecord, datatype string
 	login                            string
@@ -56,8 +59,9 @@ type rowDataRecord struct {
 }
 
 // StoreUser - store user in DB
-func StoreUser(login string, password string, fek string) (status string, authToken string) {
+func StoreUser(ctx context.Context, login string, password string, fek string) (status string, authToken string) {
 	log.Debug().Msg("func StoreUser")
+	authUser.ctx = ctx
 	authUser.login = login
 	authUser.password = password
 	authUser.fek = fek
@@ -66,16 +70,18 @@ func StoreUser(login string, password string, fek string) (status string, authTo
 }
 
 // GetUser - get user from DB
-func GetUser(login string) (status string, publickey string) {
+func GetUser(ctx context.Context, login string) (status string, publickey string) {
 	log.Debug().Msg("func GetUser")
+	authUser.ctx = ctx
 	authUser.login = login
 	SUser = authUser
 	return SUser.getuser()
 }
 
 // AuthenticateUser - authenticate User
-func AuthenticateUser(login, password string) (status string, publickey string) {
+func AuthenticateUser(ctx context.Context, login, password string) (status string, publickey string) {
 	log.Debug().Msg("func GetUser")
+	authUser.ctx = ctx
 	authUser.login = login
 	authUser.password = password
 	SUser = authUser
@@ -83,16 +89,18 @@ func AuthenticateUser(login, password string) (status string, publickey string) 
 }
 
 // GetUserRecords - get all user's records
-func GetUserRecords(login string) (status string, rowsDataRecordJSON string) {
+func GetUserRecords(ctx context.Context, login string) (status string, rowsDataRecordJSON string) {
 	log.Debug().Msg("func GetUserRecords")
+	authUser.ctx = ctx
 	authUser.login = login
 	SUser = authUser
 	return SUser.getuserrecords()
 }
 
 // StoreRecord - save record in DB
-func StoreRecord(namerecord, datarecord, datatype, login string) (status string, recordID string) {
+func StoreRecord(ctx context.Context, namerecord, datarecord, datatype, login string) (status string, recordID string) {
 	log.Debug().Msg("func StoreRecord")
+	record.ctx = ctx
 	record.namerecord = namerecord
 	record.datarecord = hex.EncodeToString([]byte(datarecord))
 	record.datatype = datatype
@@ -102,8 +110,9 @@ func StoreRecord(namerecord, datarecord, datatype, login string) (status string,
 }
 
 // UpdateRecord - update record in DB
-func UpdateRecord(recordID string, datarecord, login string) (status string) {
+func UpdateRecord(ctx context.Context, recordID string, datarecord, login string) (status string) {
 	log.Debug().Msg("func UpdateRecord")
+	record.ctx = ctx
 	record.idrecord = recordID
 	record.datarecord = hex.EncodeToString([]byte(datarecord))
 	record.login = login
@@ -112,8 +121,9 @@ func UpdateRecord(recordID string, datarecord, login string) (status string) {
 }
 
 // DeleteRecord - delete record from DB
-func DeleteRecord(recordID, login string) (status string) {
+func DeleteRecord(ctx context.Context, recordID, login string) (status string) {
 	log.Debug().Msg("func DeleteRecord")
+	record.ctx = ctx
 	record.idrecord = recordID
 	record.login = login
 	SData = record
@@ -121,7 +131,8 @@ func DeleteRecord(recordID, login string) (status string) {
 }
 
 // GetRecord - get record row from DB
-func GetRecord(idrecord, login string) (datarecord string, datatype string) {
+func GetRecord(ctx context.Context, idrecord, login string) (datarecord string, datatype string) {
+	record.ctx = ctx
 	record.idrecord = idrecord
 	record.login = login
 	SData = record
@@ -129,8 +140,9 @@ func GetRecord(idrecord, login string) (datarecord string, datatype string) {
 }
 
 // GetNameRecord - get single record name from DB
-func GetNameRecord(idrecord, login string) (namerecord string) {
+func GetNameRecord(ctx context.Context, idrecord, login string) (namerecord string) {
 	log.Debug().Msg("func GetNameRecord")
+	record.ctx = ctx
 	record.idrecord = idrecord
 	record.login = login
 	SData = record

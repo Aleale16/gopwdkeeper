@@ -10,7 +10,7 @@ import (
 )
 
 func (user authUsers) storeuser() (status string, authToken string) {
-	result, err := PGdb.Exec(context.Background(), `INSERT into users(login, password, fek) values ($1, $2, $3) on conflict (login) DO NOTHING`, user.login, user.password, user.fek)
+	result, err := PGdb.Exec(user.ctx, `INSERT into users(login, password, fek) values ($1, $2, $3) on conflict (login) DO NOTHING`, user.login, user.password, user.fek)
 	if err != nil {
 		log.Fatal().Err(err)
 		return
@@ -27,7 +27,7 @@ func (user authUsers) storeuser() (status string, authToken string) {
 }
 
 func (user authUsers) getuser() (status string, fek string) {
-	err := PGdb.QueryRow(context.Background(), `SELECT users.fek FROM users WHERE login=$1`, user.login).Scan(&fek)
+	err := PGdb.QueryRow(user.ctx, `SELECT users.fek FROM users WHERE login=$1`, user.login).Scan(&fek)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			log.Error().Msg("User doesn't exist")
