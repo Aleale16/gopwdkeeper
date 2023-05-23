@@ -68,7 +68,7 @@ func (user authUsers) getuserrecords() (status string, DataRecordsJSON string) {
 	if err != nil {
 		log.Error().Msgf(err.Error())
 	}
-	//defer rows.Close()
+	// defer rows.Close()
 	for rows.Next() {
 		err := rows.Scan(&id, &namerecord, &datarecord, &datatype)
 		if err != nil {
@@ -77,7 +77,7 @@ func (user authUsers) getuserrecords() (status string, DataRecordsJSON string) {
 			status = "500"
 			return
 		}
-		//datarecordbyte, _ := hex.DecodeString(datarecord)
+		// datarecordbyte, _ := hex.DecodeString(datarecord)
 		switch datatype {
 		case "String":
 			datarecordmask = "**********************"
@@ -89,7 +89,7 @@ func (user authUsers) getuserrecords() (status string, DataRecordsJSON string) {
 		rowsDataRecordJSON = append(rowsDataRecordJSON, rowDataRecord{
 			IDrecord:   id,
 			Namerecord: namerecord,
-			//Datarecord:			string(datarecordbyte),
+			// Datarecord:			string(datarecordbyte),
 			Datarecord: datarecordmask,
 			Datatype:   datatype,
 		})

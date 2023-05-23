@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+
 	"pwdkeeper/internal/app/initconfig"
 
 	"github.com/rs/zerolog/log"

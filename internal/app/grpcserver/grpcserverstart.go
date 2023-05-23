@@ -6,16 +6,17 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"syscall"
+
 	pb "pwdkeeper/internal/app/proto"
 	"pwdkeeper/internal/app/storage"
-	"syscall"
 
 	"google.golang.org/grpc"
 )
 
 // Grpcserverstart starts gRPC server
 func Grpcserverstart() {
-	//func Grpcserverstart() (error) {
+	// func Grpcserverstart() (error) {
 
 	storage.Initdb()
 
@@ -56,5 +57,4 @@ func Grpcserverstart() {
 		log.Printf("Fatal error: %v\n", err)
 	case <-stopChan:
 	}
-
 }

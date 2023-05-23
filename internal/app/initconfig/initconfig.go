@@ -28,7 +28,6 @@ func InitFlags() {
 
 // SetinitVars - init global vars according to ENV vars and flags passed.
 func SetinitVars() {
-
 	zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: "15:04:05"})
 	fmt.Print("Logger params is set.")
@@ -41,14 +40,11 @@ func SetinitVars() {
 		PostgresDBURL = postgresDBURLENV
 		fmt.Println("Set from ENV: PostgresDBURL:", PostgresDBURL)
 	}
-
 }
 
 // SetinitclientVars - set log level
 func SetinitclientVars() {
-
 	zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: "15:04:05"})
 	fmt.Print("Logger params is set.")
-
 }

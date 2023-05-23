@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"fmt"
+
 	"pwdkeeper/internal/app/initconfig"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -23,7 +24,7 @@ func Initdb() {
 			log.Error().Err(err)
 			log.Fatal().Msg("Unable to parse DATABASE_DSN")
 		}
-		//log.Debug().Msgf("poolConfig: %v", poolConfig)
+		// log.Debug().Msgf("poolConfig: %v", poolConfig)
 
 		PGdb, err = pgxpool.NewWithConfig(context.Background(), poolConfig)
 		if err != nil {
@@ -65,5 +66,4 @@ func Initdb() {
 	} else {
 		log.Info().Msg("PGdbOpened = FALSE")
 	}
-
 }

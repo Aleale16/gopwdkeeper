@@ -9,9 +9,8 @@ import (
 )
 
 func (data dataRecords) storerecord() (status string, recordID string) {
-
 	err := PGdb.QueryRow(data.ctx, `INSERT into data(namerecord, datarecord, datatype, login_fkey) values($1,decode($2,'hex'),$3,$4) RETURNING (id)`, data.namerecord, data.datarecord, data.datatype, data.login).Scan(&recordID)
-	//result, err := PGdb.Exec(context.Background(), `INSERT into data(namerecord, datarecord, login_fkey) values($1,$2,$3)`, data.namerecord, data.datarecord, data.login)
+	// result, err := PGdb.Exec(context.Background(), `INSERT into data(namerecord, datarecord, login_fkey) values($1,$2,$3)`, data.namerecord, data.datarecord, data.login)
 	if err != nil {
 		log.Error().Msg(err.Error())
 		return "500", ""

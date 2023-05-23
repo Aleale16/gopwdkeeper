@@ -9,6 +9,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+
 	"pwdkeeper/internal/app/initconfig"
 
 	"golang.org/x/crypto/pbkdf2"
@@ -16,7 +17,7 @@ import (
 
 // GenAuthToken uses predefined ServerKey, that compiles on both client+server. Client generate hmac signed login, Server checks if sign valid (made on ServerKey)
 func GenAuthToken(login string) (authToken string) {
-	//sign user with HMAC, using SHA256
+	// sign user with HMAC, using SHA256
 	h := hmac.New(sha256.New, initconfig.ServerKey)
 	h.Write([]byte(login))
 	dst := h.Sum(nil)
@@ -84,7 +85,7 @@ func EncryptKey1(key1, key2 []byte) (key1enc []byte) {
 
 	dst := aesgcm.Seal(nil, nonce, key1, nil) // зашифровываем
 	noncedst := append(nonce[:], dst[:]...)
-	//fmt.Printf("noncedst %v\n", noncedst)
+	// fmt.Printf("noncedst %v\n", noncedst)
 	return noncedst
 }
 
@@ -137,7 +138,6 @@ func EncryptData(somedata string, key1 []byte) (somedataenc []byte) {
 	dst := aesgcm.Seal(nil, nonce, []byte(somedata), nil) // зашифровываем
 	noncedst := append(nonce[:], dst[:]...)
 	return noncedst
-
 }
 
 // DecryptData - decrypt data with FEK

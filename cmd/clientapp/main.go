@@ -28,7 +28,6 @@ var (
 )
 
 func main() {
-
 	if buildVersion == "" {
 		buildVersion = "N/A"
 	}
@@ -60,7 +59,7 @@ func main() {
 	if err != nil {
 		log.Fatal().Err(err)
 	}
-	//defer conn.Close()
+	// defer conn.Close()
 	// получаем переменную интерфейсного типа ActionsClient,
 	// через которую будем отправлять сообщения
 	c := pb.NewActionsClient(conn)
@@ -123,9 +122,9 @@ func StartUI(c pb.ActionsClient) {
 				break
 			}
 			if userisNew {
-				//Key Encryption Key (KEK)
+				// Key Encryption Key (KEK)
 				key2 := crypter.Key2build(password)
-				//File Encryption Key (FEK)
+				// File Encryption Key (FEK)
 				key1 = crypter.Key1build()
 
 				log.Debug().Msgf("Key2build(password) %v", string(key2))
@@ -135,7 +134,7 @@ func StartUI(c pb.ActionsClient) {
 
 				key2 = crypter.Key2build(password)
 				log.Debug().Msgf("Decrypted key1: %v", string(crypter.DecryptKey1((EncryptedKey1), key2)))
-				//if msgsender.SendUserStoremsg(c, login, "password", string(EncryptedKey1)) == "200" {
+				// if msgsender.SendUserStoremsg(c, login, "password", string(EncryptedKey1)) == "200" {
 				if msgsender.SendUserStoremsg(c, login, "password", hex.EncodeToString(EncryptedKey1)) == "200" {
 					AuthToken = crypter.GenAuthToken(login)
 
@@ -156,7 +155,7 @@ func StartUI(c pb.ActionsClient) {
 					AuthToken = crypter.GenAuthToken(login)
 					log.Info().Msgf("Welcome, user %v! Logged in successfully.", login)
 					log.Debug().Msgf("User AuthToken = %v", AuthToken)
-					//crypter.IsAuhtorized(AuthToken)
+					// crypter.IsAuhtorized(AuthToken)
 					status, userRecordsJSON = msgsender.SendUserGetRecordsmsg(c, AuthToken)
 					log.Debug().Msgf("SendUserGetRecordsmsg %v", status)
 					log.Info().Msgf("List of user %v records:", login)
@@ -220,7 +219,7 @@ func StartUI(c pb.ActionsClient) {
 						log.Info().Msgf("Decrypted:\n Name=%v\n Data=%q\n Type=%v\n", loadeddataname, string(somedataDecrypted), loadeddatatype)
 					}
 					fmt.Printf("[u]pdate, [d]elete, [r]eturn? ")
-					//fmt.Printf("Enter somedata to update record ID %v: ", recordIDname)
+					// fmt.Printf("Enter somedata to update record ID %v: ", recordIDname)
 					menulevel = 41
 				} else {
 					log.Error().Msgf("Data record with ID %v is not availible (deleted)", recordIDname)
@@ -233,7 +232,7 @@ func StartUI(c pb.ActionsClient) {
 			//!Create new Record 2)Read new datatype
 		case 31:
 			datatype = consoleInput
-			//TODO different input logic for datatypes
+			// TODO different input logic for datatypes
 			switch datatype {
 			case "s":
 				datatype = "String"
@@ -340,7 +339,6 @@ func filereader(fpath string) (fcontent string, err error) {
 		return "", err
 	}
 	content, err := os.ReadFile(fpath)
-
 	if err != nil {
 		log.Error().Err(err)
 		return "", err

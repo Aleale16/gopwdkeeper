@@ -3,10 +3,11 @@ package grpcserver
 import (
 	// импортируем пакет со сгенерированными protobuf-файлами
 	"context"
+	"sync"
+
 	"pwdkeeper/internal/app/crypter"
 	pb "pwdkeeper/internal/app/proto"
 	"pwdkeeper/internal/app/storage"
-	"sync"
 )
 
 // Authctx контекст авторизации
@@ -29,7 +30,7 @@ type User struct {
 
 var user User
 
-//IsAuhtorized хорошо бы запустить аналогично как если бы были хттп хэндлеры.
+// IsAuhtorized хорошо бы запустить аналогично как если бы были хттп хэндлеры.
 //	r.Route("/api/user", func(r chi.Router) {
 //		r.Use(isAuhtorized)
 //		r.Post("/orders", handler.PostUserOrders)
@@ -43,7 +44,7 @@ func (s *ActionsServer) IsAuhtorized(ctx context.Context, in *pb.IsAuhtorizedReq
 
 	response.Login = crypter.IsAuhtorized(in.Msg)
 	user.login = "auhtorizedLogin"
-	//Authctx = context.WithValue(Authctx, user.login, response.Login)
+	// Authctx = context.WithValue(Authctx, user.login, response.Login)
 
 	return &response, nil
 }
@@ -53,7 +54,7 @@ func (s *ActionsServer) GetUser(ctx context.Context, in *pb.GetUserRequest) (*pb
 	var response pb.GetUserResponse
 
 	response.Status, response.Fek = storage.GetUser(ctx, in.Login)
-	//response.Status, response.Fek = storage.GetUser(fmt.Sprintf(("%s"), Authctx.Value("auhtorizedLogin")))
+	// response.Status, response.Fek = storage.GetUser(fmt.Sprintf(("%s"), Authctx.Value("auhtorizedLogin")))
 
 	return &response, nil
 }
@@ -79,8 +80,8 @@ func (s *ActionsServer) GetUserAuth(ctx context.Context, in *pb.GetUserAuthReque
 // GetUserRecords - returns JSON list of user's records
 func (s *ActionsServer) GetUserRecords(ctx context.Context, in *pb.GetUserRecordsRequest) (*pb.GetUserRecordsResponse, error) {
 	var response pb.GetUserRecordsResponse
-	//log.Debug().Msgf("Authctx auhtorizedLogin= %v", Authctx.Value("auhtorizedLogin"))
-	//response.Status, response.UserRecordsJSON = storage.GetUserRecords(fmt.Sprintf(("%v"), Authctx.Value("auhtorizedLogin")))
+	// log.Debug().Msgf("Authctx auhtorizedLogin= %v", Authctx.Value("auhtorizedLogin"))
+	// response.Status, response.UserRecordsJSON = storage.GetUserRecords(fmt.Sprintf(("%v"), Authctx.Value("auhtorizedLogin")))
 	response.Status, response.UserRecordsJSON = storage.GetUserRecords(ctx, crypter.IsAuhtorized(in.Login))
 
 	return &response, nil
@@ -119,7 +120,7 @@ func (s *ActionsServer) DeleteRecord(ctx context.Context, in *pb.DeleteRecordReq
 func (s *ActionsServer) GetSingleRecord(ctx context.Context, in *pb.GetSingleRecordRequest) (*pb.GetSingleRecordResponse, error) {
 	var response pb.GetSingleRecordResponse
 
-	//response.EncryptedData, response.DataType = storage.GetRecord(in.RecordID)
+	// response.EncryptedData, response.DataType = storage.GetRecord(in.RecordID)
 	response.EncryptedData, response.DataType = storage.GetRecord(ctx, in.RecordID, crypter.IsAuhtorized(in.Login))
 
 	return &response, nil
@@ -129,7 +130,7 @@ func (s *ActionsServer) GetSingleRecord(ctx context.Context, in *pb.GetSingleRec
 func (s *ActionsServer) GetSingleNameRecord(ctx context.Context, in *pb.GetSingleNameRecordRequest) (*pb.GetSingleNameRecordResponse, error) {
 	var response pb.GetSingleNameRecordResponse
 
-	//response.EncryptedData, response.DataType = storage.GetRecord(in.RecordID)
+	// response.EncryptedData, response.DataType = storage.GetRecord(in.RecordID)
 	response.DataName = storage.GetNameRecord(ctx, in.RecordID, crypter.IsAuhtorized(in.Login))
 
 	return &response, nil

@@ -7,23 +7,25 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"testing"
+
 	"pwdkeeper/internal/app/crypter"
 	"pwdkeeper/internal/app/grpcserver"
 	"pwdkeeper/internal/app/initconfig"
 	pb "pwdkeeper/internal/app/proto"
 	"pwdkeeper/internal/app/storage"
-	"testing"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/test/bufconn"
 )
 
-var LastCreatedRecordID, LastCreatedSomeData, AuthToken string
-var Kek_key2, Fek_key1 []byte
+var (
+	LastCreatedRecordID, LastCreatedSomeData, AuthToken string
+	Kek_key2, Fek_key1                                  []byte
+)
 
 func server(ctx context.Context) (pb.ActionsClient, func()) {
-
 	flag.Parse()
 
 	initconfig.SetinitVars()
@@ -68,7 +70,6 @@ func server(ctx context.Context) (pb.ActionsClient, func()) {
 }
 
 func TestStoreUser(t *testing.T) {
-
 	ctx := context.Background()
 	initconfig.InitFlags()
 
@@ -93,7 +94,7 @@ func TestStoreUser(t *testing.T) {
 			in: &pb.StoreUserRequest{
 				Login:    "TestUser1",
 				Password: "11111111",
-				//Fek: string(Fek_key1),
+				// Fek: string(Fek_key1),
 				Fek: hex.EncodeToString((Fek_key1)),
 			},
 			expected: expectation{
@@ -133,13 +134,11 @@ func TestStoreUser(t *testing.T) {
 					t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
 				}
 			}
-
 		})
 	}
 }
 
 func TestGetUser(t *testing.T) {
-
 	ctx := context.Background()
 	client, closer := server(ctx)
 	defer closer()
@@ -178,13 +177,11 @@ func TestGetUser(t *testing.T) {
 					t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
 				}
 			}
-
 		})
 	}
 }
 
 func TestGetAuthUserRecords(t *testing.T) {
-
 	ctx := context.Background()
 	client, closer := server(ctx)
 	defer closer()
@@ -242,13 +239,11 @@ func TestGetAuthUserRecords(t *testing.T) {
 					t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
 				}
 			}
-
 		})
 	}
 }
 
 func TestStoreSingleRecord(t *testing.T) {
-
 	ctx := context.Background()
 	client, closer := server(ctx)
 	defer closer()
@@ -272,7 +267,7 @@ func TestStoreSingleRecord(t *testing.T) {
 			expected: expectation{
 				out: &pb.StoreSingleRecordResponse{
 					Status: "200",
-					//RecordID:     "",
+					// RecordID:     "",
 
 				},
 				err: nil,
@@ -295,13 +290,11 @@ func TestStoreSingleRecord(t *testing.T) {
 					LastCreatedSomeData = hex.EncodeToString([]byte("SomeData1"))
 				}
 			}
-
 		})
 	}
 }
 
 func TestGetSingleRecord(t *testing.T) {
-
 	ctx := context.Background()
 	client, closer := server(ctx)
 	defer closer()
@@ -342,12 +335,11 @@ func TestGetSingleRecord(t *testing.T) {
 					t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
 				}
 			}
-
 		})
 	}
 }
-func TestGetSingleNameRecord(t *testing.T) {
 
+func TestGetSingleNameRecord(t *testing.T) {
 	ctx := context.Background()
 	client, closer := server(ctx)
 	defer closer()
@@ -386,13 +378,11 @@ func TestGetSingleNameRecord(t *testing.T) {
 					t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
 				}
 			}
-
 		})
 	}
 }
 
 func TestUpdateRecord(t *testing.T) {
-
 	ctx := context.Background()
 	client, closer := server(ctx)
 	defer closer()
@@ -446,13 +436,11 @@ func TestUpdateRecord(t *testing.T) {
 					t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
 				}
 			}
-
 		})
 	}
 }
 
 func TestDeleteRecord(t *testing.T) {
-
 	ctx := context.Background()
 	client, closer := server(ctx)
 	defer closer()
@@ -503,7 +491,6 @@ func TestDeleteRecord(t *testing.T) {
 					t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
 				}
 			}
-
 		})
 	}
 }
