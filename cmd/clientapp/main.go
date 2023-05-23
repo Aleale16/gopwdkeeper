@@ -38,15 +38,15 @@ func main() {
 	if buildCommit == "" {
 		buildCommit = "N/A"
 	}
-	_, err := fmt.Printf("Build version: %s", buildVersion)
+	_, err := fmt.Printf("Build version: %s\n", buildVersion)
 	if err != nil {
 		log.Print(err)
 	}
-	_, err = fmt.Printf("Build date: %s", buildDate)
+	_, err = fmt.Printf("Build date: %s\n", buildDate)
 	if err != nil {
 		log.Print(err)
 	}
-	_, err = fmt.Printf("Build commit: %s", buildCommit)
+	_, err = fmt.Printf("Build commit: %s\n", buildCommit)
 	if err != nil {
 		log.Print(err)
 	}
