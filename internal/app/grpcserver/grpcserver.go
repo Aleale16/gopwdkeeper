@@ -43,7 +43,7 @@ func (s *ActionsServer) IsAuhtorized(ctx context.Context, in *pb.IsAuhtorizedReq
 
 	response.Login = crypter.IsAuhtorized(in.Msg)
 	user.login = "auhtorizedLogin"
-	Authctx = context.WithValue(Authctx, user.login, response.Login)
+	//Authctx = context.WithValue(Authctx, user.login, response.Login)
 
 	return &response, nil
 }
