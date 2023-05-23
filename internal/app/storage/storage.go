@@ -12,13 +12,13 @@ import (
 var PGdb *pgxpool.Pool
 
 type authUsers struct {
-	ctx context.Context
+	ctx      context.Context
 	login    string
 	password string
 	fek      string
 }
 type dataRecords struct {
-	ctx context.Context
+	ctx                              context.Context
 	idrecord                         string
 	namerecord, datarecord, datatype string
 	login                            string
