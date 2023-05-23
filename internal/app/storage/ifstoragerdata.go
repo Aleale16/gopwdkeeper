@@ -59,12 +59,11 @@ func (data dataRecords) getrecord() (datarecord string, datatype string) {
 	err := PGdb.QueryRow(context.Background(), `SELECT data.namerecord, encode(data.datarecord,'hex'), data.datatype FROM data WHERE id=$1 and data.login_fkey=$2`, data.idrecord, data.login).Scan(&namerecord, &datarecord, &datatype)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows){
-			log.Error().Msgf("Data record is %v is not availible (deleted)", data.idrecord)
-			return
+			log.Error().Msgf("Data record is %v is not availible (deleted)", data.idrecord)			
 		} else {
-			log.Error().Msg(err.Error())
-			return
+			log.Error().Msg(err.Error())			
 		}
+		return
 	}
 
 	datarecordbyte, _ := hex.DecodeString(datarecord)

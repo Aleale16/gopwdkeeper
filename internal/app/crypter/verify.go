@@ -5,7 +5,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// Not used
+// ComparePasswords Not used
 func ComparePasswords(hashedPwd string, plainPwd []byte) bool { // Since we'll be getting the hashed password from the DB it
 	// will be a string so we'll need to convert it to a byte slice
 	byteHash := []byte(hashedPwd)

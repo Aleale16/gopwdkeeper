@@ -71,6 +71,7 @@ func main() {
 	// функция, в которой будем отправлять сообщения
 }
 
+// StartUI starts user CLI
 func StartUI(c pb.ActionsClient) {
 	var (
 		key1 []byte

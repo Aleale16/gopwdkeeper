@@ -7,6 +7,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// PGdb - DB pool
 var PGdb *pgxpool.Pool
 
 type authUsers struct{ login string; password string; fek string }
@@ -28,6 +29,9 @@ type storagerData interface {
 	getnamerecord() (namerecord string)
 	
 }
+
+// SUser - user if type
+// SData - data if type
 var (	SUser storagerUser;
 		SData storagerData;
 	)
@@ -40,6 +44,8 @@ type rowDataRecord struct {
 		Datatype 		string 	`json:"datatype"`       
 	}
 
+
+// StoreUser - store user in DB 
 func StoreUser(login string, password string, fek string) (status string, authToken string) {
 	log.Debug().Msg("func StoreUser")
 	authUser.login = login
@@ -49,6 +55,7 @@ func StoreUser(login string, password string, fek string) (status string, authTo
 	return SUser.storeuser()
 }
 
+// GetUser - get user from DB
 func GetUser(login string) (status string, publickey string){
 	log.Debug().Msg("func GetUser")
 	authUser.login = login
@@ -56,6 +63,7 @@ func GetUser(login string) (status string, publickey string){
 	return SUser.getuser()
 }
 
+// AuthenticateUser - authenticate User
 func AuthenticateUser(login, password string) (status string, publickey string){
 	log.Debug().Msg("func GetUser")
 	authUser.login = login
@@ -64,6 +72,7 @@ func AuthenticateUser(login, password string) (status string, publickey string){
 	return SUser.authenticateuser()
 }
 
+// GetUserRecords - get all user's records
 func GetUserRecords(login string) (status string, rowsDataRecordJSON string){
 	log.Debug().Msg("func GetUserRecords")
 	authUser.login = login
@@ -71,6 +80,7 @@ func GetUserRecords(login string) (status string, rowsDataRecordJSON string){
 	return SUser.getuserrecords()
 }
 
+// StoreRecord - save record in DB
 func StoreRecord(namerecord, datarecord, datatype, login string) (status string, recordID string){
 	log.Debug().Msg("func StoreRecord")
 	record.namerecord = namerecord
@@ -81,6 +91,8 @@ func StoreRecord(namerecord, datarecord, datatype, login string) (status string,
 	return SData.storerecord()
 }
 
+
+// UpdateRecord - update record in DB
 func UpdateRecord(recordID string, datarecord, login string) (status string){
 	log.Debug().Msg("func UpdateRecord")
 	record.idrecord = recordID
@@ -89,6 +101,8 @@ func UpdateRecord(recordID string, datarecord, login string) (status string){
 	SData = record
 	return SData.updaterecord()
 }
+
+//DeleteRecord - delete record from DB
 func DeleteRecord(recordID, login string) (status string){
 	log.Debug().Msg("func DeleteRecord")
 	record.idrecord = recordID
@@ -97,6 +111,7 @@ func DeleteRecord(recordID, login string) (status string){
 	return SData.deleterecord()
 }
 
+// GetRecord - get record row from DB
 func GetRecord(idrecord, login string) (datarecord string, datatype string){
 	record.idrecord = idrecord
 	record.login = login
@@ -104,6 +119,7 @@ func GetRecord(idrecord, login string) (datarecord string, datatype string){
 	return SData.getrecord()
 }
 
+// GetNameRecord - get single record name from DB
 func GetNameRecord(idrecord, login string) (namerecord string){
 	log.Debug().Msg("func GetNameRecord")
 	record.idrecord = idrecord

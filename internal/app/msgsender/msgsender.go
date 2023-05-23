@@ -104,7 +104,7 @@ func SendDeleteRecordmsg(c pb.ActionsClient, recordID, login string) (status str
 	return resp.Status
 }
 
-//SendGetSingleRecordmsg loads single user's record
+// SendGetSingleRecordmsg loads single user's record
 func SendGetSingleRecordmsg(c pb.ActionsClient, recordID, login string) (somedataenc, datatype string){
 	resp, err := c.GetSingleRecord(context.Background(), &pb.GetSingleRecordRequest{
 		RecordID: recordID,
@@ -116,7 +116,7 @@ func SendGetSingleRecordmsg(c pb.ActionsClient, recordID, login string) (somedat
 	return resp.EncryptedData, resp.DataType
 }
 
-//SendGetSingleRecordmsg loads single user's name record Not used
+// SendGetSingleNameRecordmsg loads single user's name record Not used
 func SendGetSingleNameRecordmsg(c pb.ActionsClient, recordID, login string) (namerecord string){
 	resp, err := c.GetSingleNameRecord(context.Background(), &pb.GetSingleNameRecordRequest{
 		RecordID: recordID,

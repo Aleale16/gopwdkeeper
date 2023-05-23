@@ -9,6 +9,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// Initdb - connect to DB, create schema if empty
 func Initdb() {
 	//----------------------------//
 	//Подключаемся к СУБД postgres

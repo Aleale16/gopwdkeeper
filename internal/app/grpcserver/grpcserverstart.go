@@ -14,7 +14,8 @@ import (
 )
 
 // Grpcserverstart starts gRPC server
-func Grpcserverstart() (error) {
+func Grpcserverstart() {
+//func Grpcserverstart() (error) {
 	
 	storage.Initdb()
 
@@ -55,5 +56,5 @@ func Grpcserverstart() (error) {
 		log.Printf("Fatal error: %v\n", err)
 	case <-stopChan:
 	}
-	return nil
+	
 }

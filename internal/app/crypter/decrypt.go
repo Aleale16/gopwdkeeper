@@ -10,20 +10,20 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+//User is type for user struct
 type User struct{
 	login string
 }
 
 //IsAuhtorized - checks if login is Valid Signed
 func IsAuhtorized(msg string) (login string) {
-		user, err := GetAuthenticatedUser(msg)
-		if err != nil {
-			log.Error().Msgf("Unauhtorized user.login=%v", user.login)
-			return ""
-		} else {
-			log.Info().Msgf("Auhtorized user.login=%v", user.login)
-			return user.login
-		}
+	user, err := GetAuthenticatedUser(msg)
+	if err != nil {
+		log.Error().Msgf("Unauhtorized user.login=%v", user.login)
+		return ""
+	}
+	log.Info().Msgf("Auhtorized user.login=%v", user.login)	
+	return user.login
 }
 
 //GetAuthenticatedUser - gets user login value from signed token
