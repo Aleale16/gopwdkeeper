@@ -15,8 +15,8 @@ import (
 
 // Grpcserverstart starts gRPC server
 func Grpcserverstart() {
-//func Grpcserverstart() (error) {
-	
+	//func Grpcserverstart() (error) {
+
 	storage.Initdb()
 
 	// определяем порт для сервера
@@ -30,7 +30,7 @@ func Grpcserverstart() {
 	// регистрируем сервис
 	pb.RegisterActionsServer(S, &ActionsServer{})
 
-		fmt.Println("Сервер gRPC начал работу")
+	fmt.Println("Сервер gRPC начал работу")
 	// получаем запрос gRPC
 	//	if err := s.Serve(listen); err != nil {
 	//		log.Fatal(err)
@@ -56,5 +56,5 @@ func Grpcserverstart() {
 		log.Printf("Fatal error: %v\n", err)
 	case <-stopChan:
 	}
-	
+
 }

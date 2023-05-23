@@ -14,7 +14,7 @@ func main() {
 	flag.Parse()
 
 	initconfig.SetinitVars()
-	
+
 	log.Info().Msg("Starting gRPC server...")
 	grpcserver.Grpcserverstart()
 }

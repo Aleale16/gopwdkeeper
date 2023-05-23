@@ -28,8 +28,8 @@ func (user authUsers) storeuser() (status string, authToken string) {
 
 func (user authUsers) getuser() (status string, fek string) {
 	err := PGdb.QueryRow(context.Background(), `SELECT users.fek FROM users WHERE login=$1`, user.login).Scan(&fek)
-	if err != nil {		
-		if errors.Is(err, pgx.ErrNoRows){
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
 			log.Error().Msg("User doesn't exist")
 			status = "401"
 		} else {
@@ -39,14 +39,14 @@ func (user authUsers) getuser() (status string, fek string) {
 	} else {
 		log.Info().Msg("User exists")
 		status = "200"
-		}
+	}
 	return status, fek
 }
 
 func (user authUsers) authenticateuser() (status string, fek string) {
 	err := PGdb.QueryRow(context.Background(), `SELECT users.fek FROM users WHERE login=$1 AND password=$2`, user.login, user.password).Scan(&fek)
-	if err != nil {		
-		if errors.Is(err, pgx.ErrNoRows){
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
 			log.Error().Msg("User login or password is invalid")
 			status = "401"
 		} else {
@@ -56,7 +56,7 @@ func (user authUsers) authenticateuser() (status string, fek string) {
 	} else {
 		log.Info().Msg("User login and password are OK")
 		status = "200"
-		}
+	}
 	return status, fek
 }
 
@@ -67,36 +67,36 @@ func (user authUsers) getuserrecords() (status string, DataRecordsJSON string) {
 	rows, err := PGdb.Query(context.Background(), `SELECT data.id, data.namerecord, encode(data.datarecord,'hex'), data.datatype FROM data WHERE login_fkey=$1`, user.login)
 	if err != nil {
 		log.Error().Msgf(err.Error())
-		}
+	}
 	//defer rows.Close()
 	for rows.Next() {
 		err := rows.Scan(&id, &namerecord, &datarecord, &datatype)
 		if err != nil {
-			log.Debug().Str("Query","SELECT data.id, data.namerecord, data.datarecord, data.datatype FROM data WHERE login_fkey=$1").Msg(err.Error())
+			log.Debug().Str("Query", "SELECT data.id, data.namerecord, data.datarecord, data.datatype FROM data WHERE login_fkey=$1").Msg(err.Error())
 			log.Error().Msgf(err.Error())
 			status = "500"
 			return
 		}
 		//datarecordbyte, _ := hex.DecodeString(datarecord)
-		switch datatype{
-			case "String":
-				datarecordmask = "**********************"
-			case "File":
-				datarecordmask = "*.*"
-			case "Bankcard":
-				datarecordmask = "**** **** **** ****, **/**, ***"
+		switch datatype {
+		case "String":
+			datarecordmask = "**********************"
+		case "File":
+			datarecordmask = "*.*"
+		case "Bankcard":
+			datarecordmask = "**** **** **** ****, **/**, ***"
 		}
 		rowsDataRecordJSON = append(rowsDataRecordJSON, rowDataRecord{
-			IDrecord:			id,
-			Namerecord:			namerecord,
+			IDrecord:   id,
+			Namerecord: namerecord,
 			//Datarecord:			string(datarecordbyte),
-			Datarecord:			datarecordmask,
-			Datatype:			datatype,
+			Datarecord: datarecordmask,
+			Datatype:   datatype,
 		})
 	}
 	JSONdata, err := json.MarshalIndent(rowsDataRecordJSON, "", "  ")
 	if err != nil {
-		log.Fatal().Str("JSONdata","rowsDataRecordJSON").Msg(err.Error())
+		log.Fatal().Str("JSONdata", "rowsDataRecordJSON").Msg(err.Error())
 	}
 	log.Info().Msgf("Data rows %v extracted successfully.", string(JSONdata))
 	status = "200"

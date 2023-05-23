@@ -43,12 +43,14 @@ func generateRandom(size int) ([]byte, error) {
 
 	return b, nil
 }
-//Key2build - build KEK
+
+// Key2build - build KEK
 func Key2build(password string) []byte {
 	dk := pbkdf2.Key([]byte(password), initconfig.Salt, 4096, 32, sha1.New)
 	return dk
 }
-//Key1build - build FEK
+
+// Key1build - build FEK
 func Key1build() []byte {
 	// будем использовать AES256, создав ключ длиной 32 байта
 	key, err := generateRandom(2 * aes.BlockSize) // ключ шифрования
@@ -59,7 +61,7 @@ func Key1build() []byte {
 	return key
 }
 
-//EncryptKey1 - encrypt FEK
+// EncryptKey1 - encrypt FEK
 func EncryptKey1(key1, key2 []byte) (key1enc []byte) {
 	aesblock, err := aes.NewCipher(key2)
 	if err != nil {
@@ -86,7 +88,7 @@ func EncryptKey1(key1, key2 []byte) (key1enc []byte) {
 	return noncedst
 }
 
-//DecryptKey1 - decrypt FEK
+// DecryptKey1 - decrypt FEK
 func DecryptKey1(noncekey1enc, key2 []byte) (key1decrypted []byte) {
 	// выделяем вектор инициализации
 	nonce := noncekey1enc[:12]
@@ -111,8 +113,8 @@ func DecryptKey1(noncekey1enc, key2 []byte) (key1decrypted []byte) {
 	return key1
 }
 
-//EncryptData - encrypt data with FEK
-func EncryptData (somedata string, key1 []byte)(somedataenc []byte){
+// EncryptData - encrypt data with FEK
+func EncryptData(somedata string, key1 []byte) (somedataenc []byte) {
 	aesblock, err := aes.NewCipher(key1)
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
@@ -138,7 +140,7 @@ func EncryptData (somedata string, key1 []byte)(somedataenc []byte){
 
 }
 
-//DecryptData - decrypt data with FEK
+// DecryptData - decrypt data with FEK
 func DecryptData(noncedataenc, key1 []byte) (somedatadecrypted []byte) {
 	// выделяем вектор инициализации
 	nonce := noncedataenc[:12]

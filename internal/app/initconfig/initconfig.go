@@ -11,11 +11,13 @@ import (
 
 // PostgresDBURLflag - DB connection flag
 var PostgresDBURLflag *string
+
 // PostgresDBURL - DB connection URL
 var PostgresDBURL string
 
 // ServerKey - secret phrase for for token generate
 var ServerKey = []byte("StrongPhrase_BIuaeruvlkjasdiu%2jl")
+
 // Salt - secret phrase for KEK
 var Salt = []byte("StrongSalt_BIuaeruvlkjasdiu%2jl")
 
@@ -32,17 +34,17 @@ func SetinitVars() {
 	fmt.Print("Logger params is set.")
 
 	postgresDBURLENV, postgresDBURLexists := os.LookupEnv("DATABASE_URI")
-	if !postgresDBURLexists{		
+	if !postgresDBURLexists {
 		PostgresDBURL = *PostgresDBURLflag
 		fmt.Println("Set from flag: PostgresDBURL:", PostgresDBURL)
 	} else {
 		PostgresDBURL = postgresDBURLENV
 		fmt.Println("Set from ENV: PostgresDBURL:", PostgresDBURL)
 	}
-	
+
 }
 
-//SetinitclientVars - set log level
+// SetinitclientVars - set log level
 func SetinitclientVars() {
 
 	zerolog.SetGlobalLevel(zerolog.DebugLevel)

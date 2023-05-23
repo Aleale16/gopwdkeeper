@@ -9,23 +9,27 @@ import (
 	"sync"
 )
 
-//Authctx контекст авторизации
+// Authctx контекст авторизации
 var Authctx context.Context
+
 // ActionsServer поддерживает все необходимые методы сервера.
 type ActionsServer struct {
 	// нужно встраивать тип pb.Unimplemented<TypeName>
 	// для совместимости с будущими версиями
 	pb.UnimplementedActionsServer
 }
+
 // Login type for user struct
 type Login string
+
 // User type for user struct
 type User struct {
 	login Login
 }
+
 var user User
 
-//IsAuhtorized хорошо бы запустить аналогично как если бы были хттп хэндлеры. 
+//IsAuhtorized хорошо бы запустить аналогично как если бы были хттп хэндлеры.
 //	r.Route("/api/user", func(r chi.Router) {
 //		r.Use(isAuhtorized)
 //		r.Post("/orders", handler.PostUserOrders)
@@ -33,9 +37,9 @@ var user User
 //	})
 // Не получается. Не могу передать Authctx = context.WithValue(Authctx, user.login, response.Login)
 
-//IsAuhtorized - checks if user is authorized
+// IsAuhtorized - checks if user is authorized
 func (s *ActionsServer) IsAuhtorized(ctx context.Context, in *pb.IsAuhtorizedRequest) (*pb.IsAuhtorizedResponse, error) {
-	var response pb.IsAuhtorizedResponse	
+	var response pb.IsAuhtorizedResponse
 
 	response.Login = crypter.IsAuhtorized(in.Msg)
 	user.login = "auhtorizedLogin"
@@ -47,7 +51,7 @@ func (s *ActionsServer) IsAuhtorized(ctx context.Context, in *pb.IsAuhtorizedReq
 // GetUser - returns user's FEK
 func (s *ActionsServer) GetUser(ctx context.Context, in *pb.GetUserRequest) (*pb.GetUserResponse, error) {
 	var response pb.GetUserResponse
-	
+
 	response.Status, response.Fek = storage.GetUser(in.Login)
 	//response.Status, response.Fek = storage.GetUser(fmt.Sprintf(("%s"), Authctx.Value("auhtorizedLogin")))
 
@@ -85,7 +89,7 @@ func (s *ActionsServer) GetUserRecords(ctx context.Context, in *pb.GetUserRecord
 // StoreSingleRecord - save record to auth user
 func (s *ActionsServer) StoreSingleRecord(ctx context.Context, in *pb.StoreSingleRecordRequest) (*pb.StoreSingleRecordResponse, error) {
 	var response pb.StoreSingleRecordResponse
-	if crypter.IsAuhtorized(in.Login) != ""{
+	if crypter.IsAuhtorized(in.Login) != "" {
 		response.Status, response.RecordID = storage.StoreRecord(in.DataName, in.SomeData, in.DataType, crypter.IsAuhtorized(in.Login))
 	}
 
@@ -97,7 +101,7 @@ func (s *ActionsServer) UpdateRecord(ctx context.Context, in *pb.UpdateRecordReq
 	var response pb.UpdateRecordResponse
 	var m sync.Mutex
 	m.Lock()
-		response.Status= storage.UpdateRecord(in.RecordID, in.EncryptedData, crypter.IsAuhtorized(in.Login))
+	response.Status = storage.UpdateRecord(in.RecordID, in.EncryptedData, crypter.IsAuhtorized(in.Login))
 	m.Unlock()
 	return &response, nil
 }
@@ -106,7 +110,7 @@ func (s *ActionsServer) UpdateRecord(ctx context.Context, in *pb.UpdateRecordReq
 func (s *ActionsServer) DeleteRecord(ctx context.Context, in *pb.DeleteRecordRequest) (*pb.DeleteRecordResponse, error) {
 	var response pb.DeleteRecordResponse
 
-	response.Status= storage.DeleteRecord(in.RecordID, crypter.IsAuhtorized(in.Login))
+	response.Status = storage.DeleteRecord(in.RecordID, crypter.IsAuhtorized(in.Login))
 
 	return &response, nil
 }

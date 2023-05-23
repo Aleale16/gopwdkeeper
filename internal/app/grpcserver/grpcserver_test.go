@@ -22,7 +22,6 @@ import (
 var LastCreatedRecordID, LastCreatedSomeData, AuthToken string
 var Kek_key2, Fek_key1 []byte
 
-
 func server(ctx context.Context) (pb.ActionsClient, func()) {
 
 	flag.Parse()
@@ -63,11 +62,10 @@ func server(ctx context.Context) (pb.ActionsClient, func()) {
 		baseServer.Stop()
 	}
 
-	client:= pb.NewActionsClient(conn)
+	client := pb.NewActionsClient(conn)
 
 	return client, closer
 }
-
 
 func TestStoreUser(t *testing.T) {
 
@@ -84,7 +82,7 @@ func TestStoreUser(t *testing.T) {
 	Kek_key2 = crypter.Key2build("11111111")
 	Fek_key1 = crypter.Key1build()
 	AuthToken = crypter.GenAuthToken("TestUser1")
-	 
+
 	fmt.Printf("Fek_key1= %v\n", hex.EncodeToString((Fek_key1)))
 	fmt.Printf("AuthToken= %v\n", AuthToken)
 	tests := map[string]struct {
@@ -93,34 +91,33 @@ func TestStoreUser(t *testing.T) {
 	}{
 		"User_created": {
 			in: &pb.StoreUserRequest{
-				Login: "TestUser1",
+				Login:    "TestUser1",
 				Password: "11111111",
 				//Fek: string(Fek_key1),
 				Fek: hex.EncodeToString((Fek_key1)),
 			},
 			expected: expectation{
 				out: &pb.StoreUserResponse{
-					Status:     "200",
-					Fek: "authToken",
+					Status: "200",
+					Fek:    "authToken",
 				},
 				err: nil,
 			},
 		},
 		"User_alreadyexists": {
 			in: &pb.StoreUserRequest{
-				Login: "TestUser1",
+				Login:    "TestUser1",
 				Password: "11111111",
-				Fek: hex.EncodeToString((Fek_key1)),
+				Fek:      hex.EncodeToString((Fek_key1)),
 			},
 			expected: expectation{
 				out: &pb.StoreUserResponse{
-					Status:     "409",
-					Fek: "",
+					Status: "409",
+					Fek:    "",
 				},
 				err: nil,
 			},
 		},
-
 	}
 
 	for scenario, tt := range tests {
@@ -132,7 +129,7 @@ func TestStoreUser(t *testing.T) {
 				}
 			} else {
 				if tt.expected.out.Status != out.Status ||
-					tt.expected.out.Fek != out.Fek  {
+					tt.expected.out.Fek != out.Fek {
 					t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
 				}
 			}
@@ -162,30 +159,29 @@ func TestGetUser(t *testing.T) {
 			},
 			expected: expectation{
 				out: &pb.GetUserResponse{
-					Status:     "200",
-					Fek: hex.EncodeToString((Fek_key1)),
+					Status: "200",
+					Fek:    hex.EncodeToString((Fek_key1)),
 				},
 				err: nil,
 			},
 		},
-
 	}
-		for scenario, tt := range tests {
-			t.Run(scenario, func(t *testing.T) {
-				out, err := client.GetUser(ctx, tt.in)
-				if err != nil {
-					if tt.expected.err.Error() != err.Error() {
-						t.Errorf("Err -> \nWant: %q\nGot: %q\n", tt.expected.err, err)
-					}
-				} else {
-					if tt.expected.out.Status != out.Status {
-						t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
-					}
+	for scenario, tt := range tests {
+		t.Run(scenario, func(t *testing.T) {
+			out, err := client.GetUser(ctx, tt.in)
+			if err != nil {
+				if tt.expected.err.Error() != err.Error() {
+					t.Errorf("Err -> \nWant: %q\nGot: %q\n", tt.expected.err, err)
 				}
-	
-			})
-		}
+			} else {
+				if tt.expected.out.Status != out.Status {
+					t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
+				}
+			}
+
+		})
 	}
+}
 
 func TestGetAuthUserRecords(t *testing.T) {
 
@@ -208,7 +204,7 @@ func TestGetAuthUserRecords(t *testing.T) {
 			},
 			expected: expectation{
 				out: &pb.GetUserRecordsResponse{
-					Status:     "200",
+					Status: "200",
 					UserRecordsJSON: `[
 						{
 						  "id": 4,
@@ -227,29 +223,29 @@ func TestGetAuthUserRecords(t *testing.T) {
 			},
 			expected: expectation{
 				out: &pb.GetUserRecordsResponse{
-					Status:     "200",
+					Status:          "200",
 					UserRecordsJSON: "null",
 				},
 				err: nil,
 			},
 		},
 	}
-		for scenario, tt := range tests {
-			t.Run(scenario, func(t *testing.T) {
-				out, err := client.GetUserRecords(ctx, tt.in)
-				if err != nil {
-					if tt.expected.err.Error() != err.Error() {
-						t.Errorf("Err -> \nWant: %q\nGot: %q\n", tt.expected.err, err)
-					}
-				} else {
-					if tt.expected.out.Status != out.Status /*||tt.expected.out.UserRecordsJSON != out.UserRecordsJSON */ {
-						t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
-					}
+	for scenario, tt := range tests {
+		t.Run(scenario, func(t *testing.T) {
+			out, err := client.GetUserRecords(ctx, tt.in)
+			if err != nil {
+				if tt.expected.err.Error() != err.Error() {
+					t.Errorf("Err -> \nWant: %q\nGot: %q\n", tt.expected.err, err)
 				}
-	
-			})
-		}
+			} else {
+				if tt.expected.out.Status != out.Status /*||tt.expected.out.UserRecordsJSON != out.UserRecordsJSON */ {
+					t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
+				}
+			}
+
+		})
 	}
+}
 
 func TestStoreSingleRecord(t *testing.T) {
 
@@ -271,39 +267,38 @@ func TestStoreSingleRecord(t *testing.T) {
 				DataName: "DataName1",
 				SomeData: hex.EncodeToString([]byte("SomeData1")),
 				DataType: "s",
-				Login: AuthToken,
+				Login:    AuthToken,
 			},
 			expected: expectation{
 				out: &pb.StoreSingleRecordResponse{
-					Status:     "200",
+					Status: "200",
 					//RecordID:     "",
 
 				},
 				err: nil,
 			},
 		},
+	}
 
-	}
-	
-		for scenario, tt := range tests {
-			t.Run(scenario, func(t *testing.T) {
-				out, err := client.StoreSingleRecord(ctx, tt.in)
-				if err != nil {
-					if tt.expected.err.Error() != err.Error() {
-						t.Errorf("Err -> \nWant: %q\nGot: %q\n", tt.expected.err, err)
-					}
-				} else {
-					if tt.expected.out.Status != out.Status {
-						t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
-					} else {
-						LastCreatedRecordID = out.RecordID
-						LastCreatedSomeData = hex.EncodeToString([]byte("SomeData1"))
-					}
+	for scenario, tt := range tests {
+		t.Run(scenario, func(t *testing.T) {
+			out, err := client.StoreSingleRecord(ctx, tt.in)
+			if err != nil {
+				if tt.expected.err.Error() != err.Error() {
+					t.Errorf("Err -> \nWant: %q\nGot: %q\n", tt.expected.err, err)
 				}
-	
-			})
-		}
+			} else {
+				if tt.expected.out.Status != out.Status {
+					t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
+				} else {
+					LastCreatedRecordID = out.RecordID
+					LastCreatedSomeData = hex.EncodeToString([]byte("SomeData1"))
+				}
+			}
+
+		})
 	}
+}
 
 func TestGetSingleRecord(t *testing.T) {
 
@@ -323,35 +318,34 @@ func TestGetSingleRecord(t *testing.T) {
 		"Data_SuccessGetRecord": {
 			in: &pb.GetSingleRecordRequest{
 				RecordID: LastCreatedRecordID,
-				Login: AuthToken,
+				Login:    AuthToken,
 			},
 			expected: expectation{
 				out: &pb.GetSingleRecordResponse{
-					EncryptedData:     LastCreatedSomeData,
-					DataType:     "s",
+					EncryptedData: LastCreatedSomeData,
+					DataType:      "s",
 				},
 				err: nil,
 			},
 		},
-
 	}
-		for scenario, tt := range tests {
-			t.Run(scenario, func(t *testing.T) {
-				out, err := client.GetSingleRecord(ctx, tt.in)
-				if err != nil {
-					if tt.expected.err.Error() != err.Error() {
-						t.Errorf("Err -> \nWant: %q\nGot: %q\n", tt.expected.err, err)
-					}
-				} else {
-					if tt.expected.out.EncryptedData != out.EncryptedData ||
-						tt.expected.out.DataType != out.DataType{
-						t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
-					}
+	for scenario, tt := range tests {
+		t.Run(scenario, func(t *testing.T) {
+			out, err := client.GetSingleRecord(ctx, tt.in)
+			if err != nil {
+				if tt.expected.err.Error() != err.Error() {
+					t.Errorf("Err -> \nWant: %q\nGot: %q\n", tt.expected.err, err)
 				}
-	
-			})
-		}
+			} else {
+				if tt.expected.out.EncryptedData != out.EncryptedData ||
+					tt.expected.out.DataType != out.DataType {
+					t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
+				}
+			}
+
+		})
 	}
+}
 func TestGetSingleNameRecord(t *testing.T) {
 
 	ctx := context.Background()
@@ -370,33 +364,32 @@ func TestGetSingleNameRecord(t *testing.T) {
 		"Data_SuccessGetNameRecord": {
 			in: &pb.GetSingleNameRecordRequest{
 				RecordID: LastCreatedRecordID,
-				Login: AuthToken,
+				Login:    AuthToken,
 			},
 			expected: expectation{
 				out: &pb.GetSingleNameRecordResponse{
-					DataName:     "DataName1",
+					DataName: "DataName1",
 				},
 				err: nil,
 			},
 		},
-
 	}
-		for scenario, tt := range tests {
-			t.Run(scenario, func(t *testing.T) {
-				out, err := client.GetSingleNameRecord(ctx, tt.in)
-				if err != nil {
-					if tt.expected.err.Error() != err.Error() {
-						t.Errorf("Err -> \nWant: %q\nGot: %q\n", tt.expected.err, err)
-					}
-				} else {
-					if tt.expected.out.DataName != out.DataName {
-						t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
-					}
+	for scenario, tt := range tests {
+		t.Run(scenario, func(t *testing.T) {
+			out, err := client.GetSingleNameRecord(ctx, tt.in)
+			if err != nil {
+				if tt.expected.err.Error() != err.Error() {
+					t.Errorf("Err -> \nWant: %q\nGot: %q\n", tt.expected.err, err)
 				}
-	
-			})
-		}
+			} else {
+				if tt.expected.out.DataName != out.DataName {
+					t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
+				}
+			}
+
+		})
 	}
+}
 
 func TestUpdateRecord(t *testing.T) {
 
@@ -415,48 +408,48 @@ func TestUpdateRecord(t *testing.T) {
 	}{
 		"Data_SuccessUpdateRecord": {
 			in: &pb.UpdateRecordRequest{
-				RecordID: LastCreatedRecordID,
+				RecordID:      LastCreatedRecordID,
 				EncryptedData: hex.EncodeToString([]byte("UpdatedSomeData1")),
-				Login: AuthToken,
+				Login:         AuthToken,
 			},
 			expected: expectation{
 				out: &pb.UpdateRecordResponse{
-					Status:     "200",
+					Status: "200",
 				},
 				err: nil,
 			},
 		},
 		"Data_NotFoundUpdateRecord": {
 			in: &pb.UpdateRecordRequest{
-				RecordID: "9999",
+				RecordID:      "9999",
 				EncryptedData: hex.EncodeToString([]byte("UpdatedSomeData1")),
-				Login: AuthToken,
+				Login:         AuthToken,
 			},
 			expected: expectation{
 				out: &pb.UpdateRecordResponse{
-					Status:     "409",
+					Status: "409",
 				},
 				err: nil,
 			},
 		},
 	}
-	
-		for scenario, tt := range tests {
-			t.Run(scenario, func(t *testing.T) {
-				out, err := client.UpdateRecord(ctx, tt.in)
-				if err != nil {
-					if tt.expected.err.Error() != err.Error() {
-						t.Errorf("Err -> \nWant: %q\nGot: %q\n", tt.expected.err, err)
-					}
-				} else {
-					if tt.expected.out.Status != out.Status {
-						t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
-					} 
+
+	for scenario, tt := range tests {
+		t.Run(scenario, func(t *testing.T) {
+			out, err := client.UpdateRecord(ctx, tt.in)
+			if err != nil {
+				if tt.expected.err.Error() != err.Error() {
+					t.Errorf("Err -> \nWant: %q\nGot: %q\n", tt.expected.err, err)
 				}
-	
-			})
-		}
+			} else {
+				if tt.expected.out.Status != out.Status {
+					t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
+				}
+			}
+
+		})
 	}
+}
 
 func TestDeleteRecord(t *testing.T) {
 
@@ -476,12 +469,11 @@ func TestDeleteRecord(t *testing.T) {
 		"Data_SuccessDeleteRecord": {
 			in: &pb.DeleteRecordRequest{
 				RecordID: LastCreatedRecordID,
-				Login: AuthToken,
-
+				Login:    AuthToken,
 			},
 			expected: expectation{
 				out: &pb.DeleteRecordResponse{
-					Status:     "200",
+					Status: "200",
 				},
 				err: nil,
 			},
@@ -489,12 +481,11 @@ func TestDeleteRecord(t *testing.T) {
 		"Data_NotFoundDeleteRecord": {
 			in: &pb.DeleteRecordRequest{
 				RecordID: "9999",
-				Login: AuthToken,
-
+				Login:    AuthToken,
 			},
 			expected: expectation{
 				out: &pb.DeleteRecordResponse{
-					Status:     "409",
+					Status: "409",
 				},
 				err: nil,
 			},
@@ -510,7 +501,7 @@ func TestDeleteRecord(t *testing.T) {
 			} else {
 				if tt.expected.out.Status != out.Status {
 					t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
-				} 
+				}
 			}
 
 		})
