@@ -9,8 +9,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (user authUsers) storeuser() (status string, authToken string) {
-	result, err := PGdb.Exec(user.ctx, `INSERT into users(login, password, fek) values ($1, $2, $3) on conflict (login) DO NOTHING`, user.login, user.password, user.fek)
+func (user authUsers) storeuser(ctx context.Context) (status string, authToken string) {
+	result, err := PGdb.Exec(ctx, `INSERT into users(login, password, fek) values ($1, $2, $3) on conflict (login) DO NOTHING`, user.login, user.password, user.fek)
 	if err != nil {
 		log.Fatal().Err(err)
 		return
@@ -26,8 +26,8 @@ func (user authUsers) storeuser() (status string, authToken string) {
 	return status, authToken
 }
 
-func (user authUsers) getuser() (status string, fek string) {
-	err := PGdb.QueryRow(user.ctx, `SELECT users.fek FROM users WHERE login=$1`, user.login).Scan(&fek)
+func (user authUsers) getuser(ctx context.Context) (status string, fek string) {
+	err := PGdb.QueryRow(ctx, `SELECT users.fek FROM users WHERE login=$1`, user.login).Scan(&fek)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			log.Error().Msg("User doesn't exist")
@@ -43,8 +43,8 @@ func (user authUsers) getuser() (status string, fek string) {
 	return status, fek
 }
 
-func (user authUsers) authenticateuser() (status string, fek string) {
-	err := PGdb.QueryRow(context.Background(), `SELECT users.fek FROM users WHERE login=$1 AND password=$2`, user.login, user.password).Scan(&fek)
+func (user authUsers) authenticateuser(ctx context.Context) (status string, fek string) {
+	err := PGdb.QueryRow(ctx, `SELECT users.fek FROM users WHERE login=$1 AND password=$2`, user.login, user.password).Scan(&fek)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			log.Error().Msg("User login or password is invalid")
@@ -60,11 +60,11 @@ func (user authUsers) authenticateuser() (status string, fek string) {
 	return status, fek
 }
 
-func (user authUsers) getuserrecords() (status string, DataRecordsJSON string) {
+func (user authUsers) getuserrecords(ctx context.Context) (status string, DataRecordsJSON string) {
 	var id int32
 	var namerecord, datarecord, datatype, datarecordmask string
 	var rowsDataRecordJSON []rowDataRecord
-	rows, err := PGdb.Query(context.Background(), `SELECT data.id, data.namerecord, encode(data.datarecord,'hex'), data.datatype FROM data WHERE login_fkey=$1`, user.login)
+	rows, err := PGdb.Query(ctx, `SELECT data.id, data.namerecord, encode(data.datarecord,'hex'), data.datatype FROM data WHERE login_fkey=$1`, user.login)
 	if err != nil {
 		log.Error().Msgf(err.Error())
 	}
