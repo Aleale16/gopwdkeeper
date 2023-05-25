@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "pwdkeeper/internal/app/proto";
+
+message IsAuhtorizedRequest {
+    string Msg = 1;  
+}
+message IsAuhtorizedResponse { 
+    string Login = 1;
+}
+
+message GetUserRequest {
+    string Login = 1;  
+}
+message GetUserResponse { 
+    string Status = 1;
+    string Fek = 2;
+}
+
+message StoreUserRequest {
+    string Login = 1; 
+    string Password = 2; 
+    string Fek = 3; 
+}
+message StoreUserResponse { 
+    string Status = 1;
+    string Fek = 2;
+}
+
+message GetUserAuthRequest {
+    string Login = 1;
+    string Password = 2;  
+}
+message GetUserAuthResponse { 
+    string Status = 1;
+    string Fek = 2;
+}
+
+message GetUserRecordsRequest {
+    string Login = 1;
+}
+message GetUserRecordsResponse {
+    string Status = 1;
+    string UserRecordsJSON = 2;
+}
+
+
+message GetSingleRecordRequest {
+    string RecordID = 1;
+    string Login = 2;
+}
+message GetSingleRecordResponse {
+    string EncryptedData = 1;
+    string DataType = 2;
+}
+
+message GetSingleNameRecordRequest {
+    string RecordID = 1;
+    string Login = 2;
+}
+message GetSingleNameRecordResponse {
+    string DataName= 1;
+}
+
+message UpdateRecordRequest {
+    string RecordID = 1;
+    string EncryptedData = 2; 
+    string Login = 3;   
+}
+message UpdateRecordResponse {
+    string Status = 1;
+}
+
+message DeleteRecordRequest {
+    string RecordID = 1;
+    string Login = 2; 
+}
+message DeleteRecordResponse {
+    string Status = 1;
+}
+
+message StoreSingleRecordRequest {
+    string DataName = 1;
+    string SomeData = 2;
+    string DataType = 3;
+    string Login = 4;
+}
+message StoreSingleRecordResponse {
+    string Status = 1;
+    string RecordID = 2;
+}
+
+service Actions {
+  rpc IsAuhtorized(IsAuhtorizedRequest) returns (IsAuhtorizedResponse);
+
+  rpc GetSingleRecord(GetSingleRecordRequest) returns (GetSingleRecordResponse);
+  rpc GetSingleNameRecord(GetSingleNameRecordRequest) returns (GetSingleNameRecordResponse);
+  rpc StoreSingleRecord(StoreSingleRecordRequest) returns (StoreSingleRecordResponse);
+  rpc UpdateRecord(UpdateRecordRequest) returns (UpdateRecordResponse);
+  rpc DeleteRecord(DeleteRecordRequest) returns (DeleteRecordResponse);
+
+  rpc GetUserRecords(GetUserRecordsRequest) returns (GetUserRecordsResponse);
+
+  rpc GetUserAuth(GetUserAuthRequest) returns (GetUserAuthResponse);
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc StoreUser(StoreUserRequest) returns (StoreUserResponse);
+} 
